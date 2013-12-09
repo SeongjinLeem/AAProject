@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="title_activity_project_create">New Project</string>
+
+    <!-- Strings related to login -->
+    <string name="project_title">Title</string>
+    <string name="contents">Contents</string>
+    <string name="submit_button">Submit</string>
+    <string name="create_progress">Project Creating&#8230;</string>
+</resources>

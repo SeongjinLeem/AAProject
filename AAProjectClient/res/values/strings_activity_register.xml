@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Strings related to login -->
+    <string name="register_email">Email</string>
+    <string name="register_password">Password</string>
+    <string name="register_password_confirm">Password confirm</string>
+    <string name="register_name">Name</string>
+    <string name="register_age">Age</string>
+    <string name="register_gender">Gender</string>
+    <string name="register_gender_male">Male</string>
+    <string name="register_gender_female">Female</string>
+    <string name="register_field">Field</string>
+    <string name="register_location_geo_point">Location Geo. Point</string>
+    <string name="register_location">Location</string>
+    <string name="register_set_location_button">Set Location</string>
+    <string name="register_set_button">Set</string>
+    <string name="register_select_button">Select</string>
+    <string name="register_button">Register</string>
+    <string name="register_progress">Account Register&#8230;</string>
+
+</resources>

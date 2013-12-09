@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AAProject</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_location">LocationActivity</string>
+    <string name="title_activity_project_list">ProjectListActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_section1">Project List</string>
+    <string name="title_section2">MyProject</string>
+    <string name="title_activity_project_create">ProjectCreateActivity</string>
+    <string name="title_activity_recruit_member">RecruitMemberActivity</string>
+    <string name="image_contents">No Image</string>
+    <string name="action_project_create">New Project</string>
+    <string name="action_logout">Log Out</string>
+    <string name="title_activity_start">StartActivity</string>
+    <string name="aa_project">AA Project</string>
+
+</resources>

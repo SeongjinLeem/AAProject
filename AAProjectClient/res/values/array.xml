@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="field">
+        <item>Server Programmer</item>
+        <item>Client Programmer</item>
+        <item>Android Programmer</item>
+        <item>Web Programmer</item>
+        <item>UI Designer</item>
+    </string-array>
+</resources>
