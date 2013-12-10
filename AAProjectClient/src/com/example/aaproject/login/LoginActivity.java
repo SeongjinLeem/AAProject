@@ -1,13 +1,5 @@
 package com.example.aaproject.login;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -19,16 +11,11 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
-import com.example.aaproject.R.id;
-import com.example.aaproject.R.layout;
-import com.example.aaproject.R.menu;
-import com.example.aaproject.R.string;
 import com.example.aaproject.main.MainActivity;
 import com.example.aaproject.register.RegisterActivity;
 import com.example.aaproject.util.TaskCallback;

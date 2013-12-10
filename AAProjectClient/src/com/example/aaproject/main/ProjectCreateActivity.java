@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -23,9 +22,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
-import com.example.aaproject.R.id;
-import com.example.aaproject.R.layout;
-import com.example.aaproject.R.menu;
 import com.example.aaproject.util.TaskCallback;
 
 import android.net.Uri;
@@ -56,7 +52,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 	private EditText mTitleView;
 	private EditText mContentsView;
 	private ImageView mProjectImgView;
-	private String mImageName;
+	private String mImageName = null;
 	private View mCreateFormView;
 	private View mCreateStatusView;
 	private TextView mCreateStatusMessageView;
@@ -96,22 +92,22 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 
 	public void OnClickSubmitButtonMethod(View v) {
 		boolean cancel = false;
-		View focusView = null;
 		String errmsg = null;
 
 		if (TextUtils.isEmpty(mTitleView.getText().toString())) {
 			errmsg = "Title is empty";
-			focusView = mTitleView;
 			cancel = true;
-		} else if (TextUtils.isEmpty(mContentsView.getText().toString())) {
+		}else if (TextUtils.isEmpty(mImageName)) {
+			errmsg = "ImageFile is not selected";
+			cancel = true;
+		}else if (TextUtils.isEmpty(mContentsView.getText().toString())) {
 			errmsg = "Contents is empty";
-			focusView = mContentsView;
 			cancel = true;
 		} 
 
 		if (cancel) {
 			Toast.makeText(getBaseContext(), errmsg, Toast.LENGTH_SHORT).show();
-			focusView.requestFocus();
+			
 		} else {
 			mCreateStatusMessageView.setText(R.string.create_progress);
 			showProgress(true);

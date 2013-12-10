@@ -1,17 +1,21 @@
 package com.example.aaproject.main;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
 import com.example.aaproject.R;
-import com.example.aaproject.R.drawable;
-import com.example.aaproject.R.id;
-import com.example.aaproject.R.layout;
 
 import android.content.Context;  
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import android.net.Uri;
 import android.view.LayoutInflater;  
 import android.view.View;  
 import android.view.ViewGroup;  
 import android.widget.BaseAdapter;  
-import android.widget.GridView;
 import android.widget.ImageView;  
 
 import android.widget.TextView;  
@@ -20,11 +24,11 @@ import android.widget.TextView;
 
 public class ProjectAdapter extends BaseAdapter {  
 	private Context context;  
-	private final String[] projects;  
+	private List<Project> projects;  
 
 
 
-	public ProjectAdapter(Context context, String[] projects) {  
+	public ProjectAdapter(Context context, List<Project> projects) {  
 		this.context = context;  
 		this.projects = projects;  
 	}  
@@ -60,8 +64,8 @@ public class ProjectAdapter extends BaseAdapter {
 			holder = (ViewHolder) rowView.getTag();
 		}
 
-		holder.image.setImageResource(R.drawable.no_image);
-		holder.title.setText(projects[position]);
+		holder.image.setImageBitmap(projects.get(position).getImgBitmap());
+		holder.title.setText(projects.get(position).getTitle());
 
 		return rowView;
 	} 
@@ -70,7 +74,7 @@ public class ProjectAdapter extends BaseAdapter {
 	@Override 
 
 	public int getCount() {  
-		return projects.length;  
+		return projects.size();  
 	}  
 
 	@Override 

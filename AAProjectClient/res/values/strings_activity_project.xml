@@ -7,4 +7,6 @@
     <string name="contents">Contents</string>
     <string name="submit_button">Submit</string>
     <string name="create_progress">Project Creating&#8230;</string>
+    <string name="list_progress">List Loading&#8230;</string>
+    <string name="list_empty">Projects not Exist.</string>
 </resources>

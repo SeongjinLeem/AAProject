@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
@@ -15,8 +14,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.impl.cookie.BrowserCompatSpec;
 import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.login.LoginActivity;
@@ -27,16 +25,14 @@ import com.example.aaproject.util.TaskCallback;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.widget.Toast;
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -192,7 +188,7 @@ public class StartActivity extends Activity implements TaskCallback {
 				CookieManager cookieManager = CookieManager.getInstance();
 				String keyValue = cookieManager.getCookie(url);
 				if(keyValue!=null){
-					String [] cookieArray = keyValue.split(";");
+					String [] cookieArray = keyValue.split("; ");
 					for(int i=0;i<cookieArray.length;i++){
 						String [] cookie = cookieArray[i].split("=");
 						if(cookie[0].equals("JSESSIONID")){
