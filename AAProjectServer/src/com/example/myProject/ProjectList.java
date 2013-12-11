@@ -2,8 +2,12 @@ package com.example.myProject;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.*;
@@ -46,11 +50,18 @@ public class ProjectList extends HttpServlet {
 				@SuppressWarnings("unchecked")
 				List<Project> projectList = (List<Project>) pm.newQuery(query).execute();
 				pm.close();
+				Collections.sort(projectList, new Comparator<Project>() {
+			        public int compare(Project o1, Project o2) {
+			            return o2.getDate().compareTo(o1.getDate());
+			        }
+			    });
 				out.print("<projectList>");
 				for(int i=0;i<projectList.size();i++){
 					Project p = projectList.get(i);
 					out.print("<project>");
 					out.print("<id>" + p.getId() + "</id>");
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA); 
+					out.print("<date>" + format.format(p.getDate()) + "</date>");
 					out.print("<title>" + URLEncoder.encode(p.getTitle(), "UTF-8") + "</title>");
 					out.print("<email>" + p.getEmail().getEmail() + "</email>");
 					out.print("<contents>" + URLEncoder.encode(p.getContents(), "UTF-8") + "</contents>");

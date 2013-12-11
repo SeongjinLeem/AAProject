@@ -1,17 +1,21 @@
 package com.example.aaproject.main;
 
+import java.util.Date;
+
 import android.graphics.Bitmap;
 
 public class Project {
 	private Long id;
+	private Date date;
     private String title;
     private String email;
     private String contents;
     private Bitmap imgBitmap;
     
-    public Project(Long id, String title, String email, String contents,
+    public Project(Long id, Date date, String title, String email, String contents,
     		Bitmap imgBitmap) {
 		this.id = id;
+		this.setDate(date);
 		this.title = title;
 		this.email = email;
 		this.contents = contents;
@@ -46,6 +50,12 @@ public class Project {
 	}
 	public void setImgBitmap(Bitmap imgBitmap) {
 		this.imgBitmap = imgBitmap;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
     

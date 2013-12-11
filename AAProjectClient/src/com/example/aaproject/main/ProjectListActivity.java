@@ -3,8 +3,11 @@ package com.example.aaproject.main;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -157,6 +160,9 @@ public class ProjectListActivity extends Fragment implements TaskCallback{
 							Node node = projects.item(idx).getFirstChild();
 							Long id = Long.parseLong(node.getTextContent());
 							node = node.getNextSibling();
+							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA);   
+							Date date = format.parse(node.getTextContent());
+							node = node.getNextSibling();
 							String title = URLDecoder.decode(node.getTextContent(), "UTF-8");
 							node = node.getNextSibling();
 							String email = node.getTextContent();
@@ -166,7 +172,7 @@ public class ProjectListActivity extends Fragment implements TaskCallback{
 							String urlString = node.getTextContent();
 							URL imgUrl = new URL(urlString);
 							Bitmap bitmap = BitmapFactory.decodeStream(imgUrl.openStream());
-							projectList.add(new Project(id, title, email, contents, bitmap));
+							projectList.add(new Project(id, date, title, email, contents, bitmap));
 						}
 					}catch(Exception e){
 						Log.w("list error", e.toString());

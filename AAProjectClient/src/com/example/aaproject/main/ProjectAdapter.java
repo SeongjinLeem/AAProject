@@ -16,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;  
 import android.view.ViewGroup;  
 import android.widget.BaseAdapter;  
+import android.widget.GridView;
 import android.widget.ImageView;  
+import android.widget.LinearLayout;
 
 import android.widget.TextView;  
 
@@ -55,6 +57,8 @@ public class ProjectAdapter extends BaseAdapter {
 			rowView = inflater.inflate(R.layout.project, null); 
 			holder = new ViewHolder();
 			holder.image = (ImageView) rowView.findViewById(R.id.image);
+			holder.image.setLayoutParams(new LinearLayout.LayoutParams(-1, 200));
+			holder.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			holder.title = (TextView) rowView.findViewById(R.id.title);
 			rowView.setTag(holder);
 			

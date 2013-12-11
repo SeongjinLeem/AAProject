@@ -3,8 +3,11 @@ package com.example.aaproject.main;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -47,6 +50,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,7 +127,7 @@ public class MyProjectListActivity extends Fragment implements TaskCallbackWithR
 				mReturningWithResult = true;
 			break;
 		}
-		
+
 	}
 	@Override
 	public void onResume() {
@@ -143,7 +147,7 @@ public class MyProjectListActivity extends Fragment implements TaskCallbackWithR
 
 	@Override
 	public void onPostResume() {
-		
+
 	}
 
 	private class LogoutThread extends AsyncTask<Void, Void, String> {
@@ -277,6 +281,9 @@ public class MyProjectListActivity extends Fragment implements TaskCallbackWithR
 								Node node = projects.item(idx).getFirstChild();
 								Long id = Long.parseLong(node.getTextContent());
 								node = node.getNextSibling();
+								SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA);   
+								Date date = format.parse(node.getTextContent());
+								node = node.getNextSibling();
 								String title = URLDecoder.decode(node.getTextContent(), "UTF-8");
 								node = node.getNextSibling();
 								String email = node.getTextContent();
@@ -286,9 +293,10 @@ public class MyProjectListActivity extends Fragment implements TaskCallbackWithR
 								String urlString = node.getTextContent();
 								URL imgUrl = new URL(urlString);
 								Bitmap bitmap = BitmapFactory.decodeStream(imgUrl.openStream());
-								projectList.add(new Project(id, title, email, contents, bitmap));
+								projectList.add(new Project(id, date, title, email, contents, bitmap));
 							}
 						}catch(Exception e){
+							Log.w("list", e.toString());
 						}
 					}
 					return responseBody;

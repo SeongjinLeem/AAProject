@@ -1,5 +1,7 @@
 package com.example.myProject.data;
 
+import java.util.Date;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -30,8 +32,17 @@ public class Project {
     @Persistent
     BlobKey blobKey;
     
+    @Persistent
+    Date date;
     
-    public Long getId() {
+    
+    public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
@@ -64,6 +75,7 @@ public class Project {
 	
 
     public Project(String title, Email email, BlobKey blobKey, String contents) {
+    	this.date = new Date();
         this.title = title; 
         this.email = email;
         this.blobKey = blobKey;
