@@ -5,6 +5,14 @@
     android:padding="5dp" 
     android:orientation="vertical">
     
+    <TextView
+        android:id="@+id/project_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text=""
+        android:visibility="invisible" >
+    </TextView>
 
     <ImageView
         android:id="@+id/image"
@@ -18,9 +26,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="@+id/title"
+        android:text=""
         android:gravity="center"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textSize="15sp" >
     </TextView>
+    
 
 </LinearLayout>

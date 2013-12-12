@@ -9,7 +9,6 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Email;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -28,8 +27,14 @@ public class Project {
 
 	@Persistent
     private String contents; 
+	
+	@Persistent
+    private Long goal;
+	
+	@Persistent
+    private Long donation; 
 
-    @Persistent
+	@Persistent
     BlobKey blobKey;
     
     @Persistent
@@ -72,13 +77,26 @@ public class Project {
 	public void setEmail(Email email) {
 		this.email = email;
 	}
-	
+	public Long getGoal() {
+		return goal;
+	}
+	public void setGoal(Long goal) {
+		this.goal = goal;
+	}
+	public Long getDonation() {
+		return donation;
+	}
+	public void setDonation(Long donation) {
+		this.donation = donation;
+	}
 
-    public Project(String title, Email email, BlobKey blobKey, String contents) {
+    public Project(String title, Email email, BlobKey blobKey, String contents, Long goal) {
     	this.date = new Date();
         this.title = title; 
         this.email = email;
         this.blobKey = blobKey;
         this.contents = contents;
+        this.goal = goal;
+        this.donation = (long) 0;
     }
 }

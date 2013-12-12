@@ -9,70 +9,72 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>Login</servlet-name>
 		<servlet-class>com.example.myProject.Login</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>Logout</servlet-name>
+		<servlet-class>com.example.myProject.Logout</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>LoginForm</servlet-name>
+		<servlet-class>com.example.myProject.LoginForm</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Register</servlet-name>
+		<servlet-class>com.example.myProject.Register</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ProjectServlet</servlet-name>
+		<servlet-class>com.example.myProject.ProjectServlet</servlet-class>
+	</servlet>
+	
+	
 	<servlet-mapping>
 		<servlet-name>Login</servlet-name>
 		<url-pattern>/login</url-pattern>
 	</servlet-mapping>
 	
-	<servlet>
-		<servlet-name>Logout</servlet-name>
-		<servlet-class>com.example.myProject.Logout</servlet-class>
-	</servlet>
 	<servlet-mapping>
 		<servlet-name>Logout</servlet-name>
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
 	
-
-
-	<servlet>
-		<servlet-name>LoginForm</servlet-name>
-		<servlet-class>com.example.myProject.LoginForm</servlet-class>
-	</servlet>
 	<servlet-mapping>
 		<servlet-name>LoginForm</servlet-name>
 		<url-pattern>/loginform</url-pattern>
 	</servlet-mapping>
+	
 	<servlet-mapping>
 		<servlet-name>LoginForm</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>Register</servlet-name>
-		<servlet-class>com.example.myProject.Register</servlet-class>
-	</servlet>
 	<servlet-mapping>
 		<servlet-name>Register</servlet-name>
 		<url-pattern>/register</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>ProjectList</servlet-name>
-		<servlet-class>com.example.myProject.ProjectList</servlet-class>
-	</servlet>
+
 	<servlet-mapping>
-		<servlet-name>ProjectList</servlet-name>
+		<servlet-name>ProjectServlet</servlet-name>
 		<url-pattern>/projectlist</url-pattern>
 	</servlet-mapping>
 	
-	<servlet>
-		<servlet-name>ProjectCreate</servlet-name>
-		<servlet-class>com.example.myProject.ProjectCreate</servlet-class>
-	</servlet>
 	<servlet-mapping>
-		<servlet-name>ProjectCreate</servlet-name>
+		<servlet-name>ProjectServlet</servlet-name>
 		<url-pattern>/projectcreate</url-pattern>
 	</servlet-mapping>
 	
-	
-	<servlet>
-		<servlet-name>ProjectUpload</servlet-name>
-		<servlet-class>com.example.myProject.ProjectUpload</servlet-class>
-	</servlet>
 	<servlet-mapping>
-		<servlet-name>ProjectUpload</servlet-name>
+		<servlet-name>ProjectServlet</servlet-name>
 		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>ProjectServlet</servlet-name>
+		<url-pattern>/projectdisplay</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>ProjectServlet</servlet-name>
+		<url-pattern>/sponsor</url-pattern>
 	</servlet-mapping>
 	
 </web-app>

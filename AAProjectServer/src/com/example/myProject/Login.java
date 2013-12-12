@@ -8,10 +8,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.example.myProject.data.User;
-import com.google.android.gcm.server.Constants;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Result;
-import com.google.android.gcm.server.Sender;
 
 
 public class Login extends HttpServlet {

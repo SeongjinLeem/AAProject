@@ -51,6 +51,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 	private static final int REQ_CODE_PICK_PICTURE = 0;
 	private EditText mTitleView;
 	private EditText mContentsView;
+	private EditText mGoalView;
 	private ImageView mProjectImgView;
 	private String mImageName = null;
 	private View mCreateFormView;
@@ -61,7 +62,8 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 	final Handler mHandler = new Handler();
 
 	public void done() {
-		Intent intent = new Intent(getBaseContext(), MyProjectListActivity.class);
+		mSubmitThread = null;
+		Intent intent = new Intent(getBaseContext(), MyProjectListFragment.class);
 		this.setResult(RESULT_OK, intent);
 		this.finish();
 	}
@@ -73,7 +75,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 		mTitleView = (EditText) findViewById(R.id.title);
 		mProjectImgView = (ImageView)findViewById(R.id.project_image);
 		mContentsView = (EditText) findViewById(R.id.contents);
-
+		mGoalView = (EditText) findViewById(R.id.goal);
 		mProjectImgView.setOnClickListener(
 				new View.OnClickListener() {
 					@Override
@@ -111,7 +113,8 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 		} else {
 			mCreateStatusMessageView.setText(R.string.create_progress);
 			showProgress(true);
-			mSubmitThread = (SubmitThread) new SubmitThread(this).execute((Void) null);
+			mSubmitThread = (SubmitThread) new SubmitThread(this);
+			mSubmitThread.execute((Void) null);
 		}
 	}
 
@@ -173,8 +176,6 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 	
 
 	private class SubmitThread extends AsyncTask<Void, Void, String> {
-
-		private Exception exception;
 		private TaskCallback mCallback;
 
 		public SubmitThread(TaskCallback callback) {
@@ -220,10 +221,11 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 				}
 				
 				MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-				entity.addPart("image", new FileBody(new File (mImageName)));
-				entity.addPart("title", new StringBody(URLEncoder.encode(mTitleView.getText().toString(), "UTF-8")));
 				entity.addPart("action", new StringBody("ProjectCreate"));
+				entity.addPart("title", new StringBody(URLEncoder.encode(mTitleView.getText().toString(), "UTF-8")));
 				entity.addPart("email", new StringBody(email));
+				entity.addPart("image", new FileBody(new File (mImageName)));
+				entity.addPart("goal", new StringBody(mGoalView.getText().toString()));
 				entity.addPart("contents", new StringBody(URLEncoder.encode(mContentsView.getText().toString(), "UTF-8")));
 				httpPost.setEntity(entity);
 				HttpResponse response = httpClient.execute(httpPost, localContext);

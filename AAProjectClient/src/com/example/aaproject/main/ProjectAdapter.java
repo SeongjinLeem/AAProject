@@ -1,22 +1,16 @@
 package com.example.aaproject.main;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import com.example.aaproject.R;
+import com.example.aaproject.project.Project;
 
 import android.content.Context;  
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
-import android.net.Uri;
 import android.view.LayoutInflater;  
 import android.view.View;  
 import android.view.ViewGroup;  
 import android.widget.BaseAdapter;  
-import android.widget.GridView;
 import android.widget.ImageView;  
 import android.widget.LinearLayout;
 
@@ -37,8 +31,8 @@ public class ProjectAdapter extends BaseAdapter {
 
 	class ViewHolder {
 		public ImageView image;
-		public TextView  title;
-		
+		public TextView title;
+		public TextView id;
 	}
 
 	@Override
@@ -60,8 +54,8 @@ public class ProjectAdapter extends BaseAdapter {
 			holder.image.setLayoutParams(new LinearLayout.LayoutParams(-1, 200));
 			holder.image.setScaleType(ImageView.ScaleType.CENTER_CROP);
 			holder.title = (TextView) rowView.findViewById(R.id.title);
-			rowView.setTag(holder);
-			
+			holder.id = (TextView) rowView.findViewById(R.id.project_id);
+			rowView.setTag(holder);	
 		} 
 		else 
 		{
@@ -70,7 +64,7 @@ public class ProjectAdapter extends BaseAdapter {
 
 		holder.image.setImageBitmap(projects.get(position).getImgBitmap());
 		holder.title.setText(projects.get(position).getTitle());
-
+		holder.id.setText(projects.get(position).getId().toString());
 		return rowView;
 	} 
 

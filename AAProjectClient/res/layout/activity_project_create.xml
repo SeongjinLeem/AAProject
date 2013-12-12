@@ -58,6 +58,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:src="@drawable/no_image" />
+             <EditText
+                android:id="@+id/goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/project_goal"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:singleLine="true" />
 
             <EditText
                 android:id="@+id/contents"

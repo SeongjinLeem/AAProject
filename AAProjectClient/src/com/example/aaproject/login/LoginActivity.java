@@ -16,7 +16,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
-import com.example.aaproject.main.MainActivity;
+import com.example.aaproject.main.MainFragmentActivity;
 import com.example.aaproject.register.RegisterActivity;
 import com.example.aaproject.util.TaskCallback;
 import com.google.android.gcm.GCMRegistrar;
@@ -308,7 +308,7 @@ public class LoginActivity extends Activity implements TaskCallback {
 
 	@Override
 	public void done() {
-		Intent intent = new Intent(getBaseContext(), MainActivity.class);
+		Intent intent = new Intent(getBaseContext(), MainFragmentActivity.class);
 		startActivity(intent);
 		finish();
 	}

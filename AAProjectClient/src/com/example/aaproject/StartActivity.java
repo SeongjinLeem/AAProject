@@ -18,7 +18,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.login.LoginActivity;
-import com.example.aaproject.main.MainActivity;
+import com.example.aaproject.main.MainFragmentActivity;
 import com.example.aaproject.util.SystemUiHider;
 import com.example.aaproject.util.TaskCallback;
 
@@ -146,7 +146,8 @@ public class StartActivity extends Activity implements TaskCallback {
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-		mLoginCheckThread = (LoginCheckThread) new LoginCheckThread(this).execute((Void) null);
+		mLoginCheckThread = (LoginCheckThread) new LoginCheckThread(this);
+		mLoginCheckThread.execute((Void) null);
 		delayedHide(100);
 	}
 
@@ -168,9 +169,6 @@ public class StartActivity extends Activity implements TaskCallback {
 	}
 
 	private class LoginCheckThread extends AsyncTask<Void, Void, String> {
-
-		private Exception exception;
-
 		private TaskCallback mCallback;
 
 		public LoginCheckThread(TaskCallback callback) {
@@ -224,9 +222,10 @@ public class StartActivity extends Activity implements TaskCallback {
 	}
 
 	public void done() {
+		mLoginCheckThread = null;
 		Intent intent = null;
 		if(loggedin){
-			intent = new Intent(getBaseContext(), MainActivity.class);
+			intent = new Intent(getBaseContext(), MainFragmentActivity.class);
 		}else{
 			intent = new Intent(getBaseContext(), LoginActivity.class);
 		}

@@ -80,13 +80,12 @@
             android:label="@string/title_activity_location" >
         </activity>
         <activity
-            android:name="com.example.aaproject.main.ProjectListActivity"
+            android:name="com.example.aaproject.main.ProjectListFragment"
             android:label="@string/title_activity_project_list" >
         </activity>
         <activity
-            android:name="com.example.aaproject.main.MainActivity"
+            android:name="com.example.aaproject.main.MainFragmentActivity"
             android:label="@string/title_activity_main" >
-            
         </activity>
         <activity
             android:name="com.example.aaproject.main.ProjectCreateActivity"
@@ -106,6 +105,26 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.aaproject.project.ProjectDisplayFragmentActivity"
+            android:label="@string/title_activity_project_display" >
+        </activity>
+        <activity
+            android:name="com.example.aaproject.project.ProjectIntroductionFragment"
+            android:label="@string/title_activity_project_introduction" >
+        </activity>
+        <activity
+            android:name="com.example.aaproject.project.ProjectRecruitActivity"
+            android:label="@string/title_activity_project_recruit" >
+        </activity>
+        <activity
+            android:name="com.example.aaproject.project.ProjectJoinActivity"
+            android:label="@string/title_activity_project_join" >
+        </activity>
+        <activity
+            android:name="com.example.aaproject.project.ProjectSponsorActivity"
+            android:label="@string/title_activity_project_sponsoring" >
         </activity>
     </application>
 
