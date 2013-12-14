@@ -29,9 +29,16 @@ public class Logout extends HttpServlet {
 			response.setContentType("text/plain");
 			PrintWriter out = response.getWriter();
 			if(session.getAttribute("loginEmail") != null){
+				PersistenceManager pm = PMF.get().getPersistenceManager();
+				String query = "select from " + User.class.getName() + " where email == '" + session.getAttribute("loginEmail").toString() + "'";
+				@SuppressWarnings("unchecked")
+				List<User> users = (List<User>) pm.newQuery(query).execute();
+				User user = users.get(0);
+				user.setLoggedin(false);
+				pm.makePersistent(user);
 				synchronized(session) {
 					session.invalidate();
-				}
+				}	
 				out.println("Logout Success");
 			}else{
 				out.println("Logout Failed");

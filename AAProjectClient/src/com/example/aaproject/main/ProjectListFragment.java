@@ -1,7 +1,9 @@
 package com.example.aaproject.main;
 
 
+
 import com.example.aaproject.R;
+import com.example.aaproject.model.ProjectAdapter;
 import com.example.aaproject.project.ProjectDisplayFragmentActivity;
 
 import android.annotation.SuppressLint;

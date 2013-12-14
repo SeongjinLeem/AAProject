@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:background="#9370DB"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="1dp" >
+
+        <View
+            android:layout_width="20dp"
+            android:background="#ffffff"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/project"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="40"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:padding="1dp"
+            android:text="" >
+        </TextView>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/invite_email"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="60"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:padding="1dp"
+            android:text="" >
+        </TextView>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/invite_state"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="25"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:padding="1dp"
+            android:text="" >
+        </TextView>
+
+
+</LinearLayout>

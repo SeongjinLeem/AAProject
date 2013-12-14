@@ -38,8 +38,14 @@ public class User {
     @Persistent
     private GeoPt location;
     
+    @Persistent
+    private String regId;
+    
+    @Persistent
+    private boolean loggedin;
+    
     public User(Email email, String password, String name, int age,
-			String gender, String field, GeoPt location) {
+			String gender, String field, GeoPt location, String regId) {
 		this.email = email;
 		this.password = password;
 		this.name = name;
@@ -47,6 +53,8 @@ public class User {
 		this.gender = gender;
 		this.field = field;
 		this.location = location;
+		this.regId = regId;
+		this.loggedin = false;
 	}
 
 	public Long getId() {
@@ -128,10 +136,20 @@ public class User {
 		this.location = location;
 	}
 
+	public String getRegId() {
+		return regId;
+	}
 
-	
-    
+	public void setRegId(String regId) {
+		this.regId = regId;
+	}
 
-    
+	public boolean isLoggedin() {
+		return loggedin;
+	}
+
+	public void setLoggedin(boolean loggedin) {
+		this.loggedin = loggedin;
+	}
 
 }

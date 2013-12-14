@@ -14,6 +14,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -32,20 +33,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.example.aaproject.R;
-import com.example.aaproject.project.Project;
+import com.example.aaproject.model.Project;
+import com.example.aaproject.util.ProgressControl;
 import com.example.aaproject.util.TaskCallback;
 
-
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -54,10 +51,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 
@@ -67,11 +64,11 @@ ActionBar.TabListener, TaskCallback {
 	public List<Project> mProjectList = null;
 	public List<Project> mMyProjectList = null;
 	private ListLoadingTask mListLoadingTask = null;
-	private View mListStatusView;
-	private TextView mListStatusMessageView;
 	public String mMyEmail = null;
 	public String mJSESSIONID = null;
 	private boolean mCreateFlag = true;
+	private boolean mRecruitFlag = false;
+	private ProgressControl mProgressControl;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -109,16 +106,15 @@ ActionBar.TabListener, TaskCallback {
 				}
 			}
 		}
-		mListStatusView = findViewById(R.id.main_status);
-		mListStatusMessageView = (TextView) findViewById(R.id.main_status_message);
-		mListStatusMessageView.setText(R.string.main_progress);
+		mProgressControl = new ProgressControl(getBaseContext(), mViewPager, findViewById(R.id.main_status), (TextView) findViewById(R.id.main_status_message));
+		mProgressControl.setMessageById(R.string.main_progress);
 
 		projectListLoad();
 
 	}
 
 	public void projectListLoad(){
-		showProgress(true);
+		mProgressControl.showProgress(true);
 
 		mListLoadingTask = new ListLoadingTask(this);
 		mListLoadingTask.execute();
@@ -167,7 +163,10 @@ ActionBar.TabListener, TaskCallback {
 						.setTabListener(this));
 			}
 		}
-		showProgress(false);
+		mProgressControl.showProgress(false);
+		if(mRecruitFlag){
+			Toast.makeText(getBaseContext(), "대기 중인 승인 요청이 있습니다.", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
@@ -266,6 +265,15 @@ ActionBar.TabListener, TaskCallback {
 					try{
 						Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);    
 						XPath xpath = XPathFactory.newInstance().newXPath();
+						NodeList temp = (NodeList)xpath.evaluate("/projectList", document, XPathConstants.NODESET);
+						Node tmpNode = temp.item(0);
+						if(tmpNode.getAttributes()!=null){
+							Node namedItem = tmpNode.getAttributes().getNamedItem("flag");
+							if(namedItem !=null && namedItem.getNodeValue().equals("true"))
+								mRecruitFlag = true;
+						}
+							
+						
 						NodeList projects = (NodeList)xpath.evaluate("/projectList/project", document, XPathConstants.NODESET);
 						for( int idx=0; idx<projects.getLength(); idx++ ){
 							Node node = projects.item(idx).getFirstChild();
@@ -308,47 +316,6 @@ ActionBar.TabListener, TaskCallback {
 		@Override
 		protected void onPostExecute(final Boolean result) {
 			mCallback.done();
-		}
-	}
-
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mListStatusView.setVisibility(View.VISIBLE);
-			mListStatusView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 1 : 0)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mListStatusView.setVisibility(show ? View.VISIBLE
-							: View.GONE);
-				}
-			});
-
-			mViewPager.setVisibility(View.VISIBLE);
-			mViewPager.animate().setDuration(shortAnimTime)
-			.alpha(show ? 0 : 1)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mViewPager.setVisibility(show ? View.GONE
-							: View.VISIBLE);
-				}
-			});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mListStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mViewPager.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
 	}
 

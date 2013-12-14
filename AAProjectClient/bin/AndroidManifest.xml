@@ -119,12 +119,23 @@
             android:label="@string/title_activity_project_recruit" >
         </activity>
         <activity
+            android:name="com.example.aaproject.project.ProjectSendRecruitActivity" >
+        </activity>
+        <activity
             android:name="com.example.aaproject.project.ProjectJoinActivity"
             android:label="@string/title_activity_project_join" >
         </activity>
         <activity
             android:name="com.example.aaproject.project.ProjectSponsorActivity"
             android:label="@string/title_activity_project_sponsoring" >
+        </activity>
+        <activity
+            android:name="com.example.aaproject.project.MemberLocationActivity"
+            android:label="@string/title_activity_member_location" >
+        </activity>
+        <activity
+            android:name="com.example.aaproject.main.RecruitStateActivity"
+            android:label="@string/title_activity_recruit_state" >
         </activity>
     </application>
 

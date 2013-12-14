@@ -9,6 +9,7 @@ import com.example.aaproject.R.drawable;
 import com.example.aaproject.R.id;
 import com.example.aaproject.R.layout;
 import com.example.aaproject.R.menu;
+import com.example.aaproject.util.GeoInfoTrans;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -76,7 +77,7 @@ public class LocationActivity extends FragmentActivity {
 					mMarker.remove();
 				
 				mMarkerOptions.position(latLng);
-				addr = searchLocation(latLng);
+				addr = GeoInfoTrans.searchLocation(getBaseContext(), latLng);
 				currentLoc = latLng;
 				mMap.clear();
 				mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -92,7 +93,7 @@ public class LocationActivity extends FragmentActivity {
 					@Override
 					public void onClick(View view) {
 						LatLng latlng;
-						latlng = searchGeoPoint(mLocation.getText().toString());
+						latlng = GeoInfoTrans.searchGeoPoint(getBaseContext(), mLocation.getText().toString());
 						if(latlng != null){
 							currentLoc = latlng;
 							mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 17));
@@ -115,40 +116,5 @@ public class LocationActivity extends FragmentActivity {
 		intent.putExtras(extra);
 		this.setResult(RESULT_OK, intent);
 		this.finish();
-	}
-	
-	public String searchLocation(LatLng latlng){
-		Geocoder coder = new Geocoder(getApplicationContext());
-		try{
-			List<Address> addrList = coder.getFromLocation(latlng.latitude, latlng.longitude, 1);
-			StringBuilder strBlder = new StringBuilder();
-			if(addrList.size()>0){
-				Address addr = addrList.get(0);
-				for(int i=0;i<=addr.getMaxAddressLineIndex();i++)
-					strBlder.append(addr.getAddressLine(i));
-				return strBlder.toString();
-			}
-		}catch(IOException e)
-		{}
-		return null;
-	}
-	public LatLng searchGeoPoint(String location){
-		String searchingName = mLocation.getText().toString();
-		Geocoder coder = new Geocoder(getApplicationContext());
-		try{
-			List<Address> addrList = coder.getFromLocationName(searchingName, 1);
-			double lat = 0f;
-			double lng = 0f;
-			if(addrList.size()>0){
-				Address loc = addrList.get(0);
-				lat = loc.getLatitude();
-				lng = loc.getLongitude();
-				return new LatLng(lat, lng) ;
-			}
-		}catch(IOException e)
-		{
-			
-		}
-		return null;
 	}
 }

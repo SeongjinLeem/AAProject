@@ -3,31 +3,32 @@ package com.example.aaproject.project;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
-import com.example.aaproject.register.LocationActivity;
+import com.example.aaproject.util.ProgressControl;
 import com.example.aaproject.util.TaskCallback;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,8 +40,7 @@ public class ProjectSponsorActivity extends Activity implements TaskCallback{
 	private RadioGroup mSponsorGroup;
 	private SubmitThread mSubmitThread = null;
 	private Long donationValue;
-	private View mSubmitStatusView;
-	private TextView mSubmitStatusMessageView;
+	private ProgressControl mProgressControl;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +54,7 @@ public class ProjectSponsorActivity extends Activity implements TaskCallback{
 		getMenuInflater().inflate(R.menu.project_sponsoring, menu);
 
 		mSponsorGroup = (RadioGroup) findViewById(R.id.donation_select);
-		mSubmitStatusView = findViewById(R.id.submit_status);
-		mSubmitStatusMessageView = (TextView) findViewById(R.id.submit_status_message);
+		mProgressControl = new ProgressControl(getBaseContext(), mSponsorGroup, findViewById(R.id.submit_status), (TextView) findViewById(R.id.submit_status_message));
 
 		((EditText)findViewById(R.id.donation_edit)).setOnFocusChangeListener(new EditText.OnFocusChangeListener(){
 			@Override
@@ -100,54 +99,12 @@ public class ProjectSponsorActivity extends Activity implements TaskCallback{
 		if (cancel) {
 			Toast.makeText(getBaseContext(), errmsg, Toast.LENGTH_SHORT).show();
 		} else {
-			mSubmitStatusMessageView.setText(R.string.sponsor_progress);
-			showProgress(true);
+			mProgressControl.setMessageById(R.string.sponsor_progress);
+			mProgressControl.showProgress(true);
 			mSubmitThread = (SubmitThread) new SubmitThread(this);
 			mSubmitThread.execute((Void) null);
 		}
 	}
-
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mSubmitStatusView.setVisibility(View.VISIBLE);
-			mSubmitStatusView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 1 : 0)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mSubmitStatusView.setVisibility(show ? View.VISIBLE
-							: View.GONE);
-				}
-			});
-
-			mSponsorGroup.setVisibility(View.VISIBLE);
-			mSponsorGroup.animate().setDuration(shortAnimTime)
-			.alpha(show ? 0 : 1)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mSponsorGroup.setVisibility(show ? View.GONE
-							: View.VISIBLE);
-				}
-			});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mSubmitStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mSponsorGroup.setVisibility(show ? View.GONE : View.VISIBLE);
-		}
-	}
-
 
 	private class SubmitThread extends AsyncTask<Void, Void, String> {
 		private TaskCallback mCallback;
@@ -158,9 +115,25 @@ public class ProjectSponsorActivity extends Activity implements TaskCallback{
 
 		@Override
 		protected String doInBackground(Void... arg0) {
-			HttpClient httpClient = new DefaultHttpClient();
+			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpPost httpPost = new HttpPost(url);
 			try {
+				CookieSyncManager.createInstance(getBaseContext());
+				CookieManager cookieManager = CookieManager.getInstance();
+				String keyValue = cookieManager.getCookie("http://test20103377.appspot.com/");
+				if(keyValue!=null){
+					String [] cookieArray = keyValue.split("; ");
+					for(int i=0;i<cookieArray.length;i++){
+						String [] cookie = cookieArray[i].split("=");
+						if(cookie[0].equals("JSESSIONID")){
+							httpClient.getCookieStore().addCookie(new BasicClientCookie(cookie[0], cookie[1]));
+							CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
+							List<Cookie> cookies  = httpClient.getCookieStore().getCookies();
+							List<?> cookieHeader = cookieSpecBase.formatCookies(cookies);
+							httpPost.setHeader((Header) cookieHeader.get(0));
+						}
+					}
+				}
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 				nameValuePairs.add(new BasicNameValuePair("action", "donation"));
 				nameValuePairs.add(new BasicNameValuePair("projectID", getIntent().getExtras().getString("projectID")));
@@ -180,7 +153,6 @@ public class ProjectSponsorActivity extends Activity implements TaskCallback{
 
 		protected void onPostExecute(String result) {
 			mSubmitThread = null;
-			showProgress(false);
 			if(result.contains("Submit Success")){
 				mCallback.done();
 			}
@@ -188,7 +160,7 @@ public class ProjectSponsorActivity extends Activity implements TaskCallback{
 		@Override
 		protected void onCancelled() {
 			mSubmitThread = null;
-			showProgress(false);
+			mProgressControl.showProgress(false);
 		}
 	}
 

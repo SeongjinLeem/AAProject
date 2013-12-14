@@ -4,6 +4,7 @@ package com.example.aaproject.main;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
 import com.example.aaproject.login.LoginActivity;
+import com.example.aaproject.model.ProjectAdapter;
 import com.example.aaproject.project.ProjectDisplayFragmentActivity;
 import com.example.aaproject.util.TaskCallback;
 
@@ -73,6 +75,16 @@ public class MyProjectListFragment extends Fragment implements TaskCallback{
 					public void onClick(View view) {
 						Intent intent = new Intent(mContext, ProjectCreateActivity.class);
 						startActivityForResult(intent, PROJECT_CREATE_ACTIVITY);
+					}
+				});
+		
+		view.findViewById(R.id.recruit_state_button).setOnClickListener(
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Intent intent = new Intent(mContext, RecruitStateActivity.class);
+						intent.putExtra("email", ((MainFragmentActivity)mContext).mMyEmail);
+						startActivity(intent);
 					}
 				});
 

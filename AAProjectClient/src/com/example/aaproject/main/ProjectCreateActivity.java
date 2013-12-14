@@ -6,22 +6,28 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
+import com.example.aaproject.util.ProgressControl;
 import com.example.aaproject.util.TaskCallback;
 
 import android.net.Uri;
@@ -54,9 +60,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 	private EditText mGoalView;
 	private ImageView mProjectImgView;
 	private String mImageName = null;
-	private View mCreateFormView;
-	private View mCreateStatusView;
-	private TextView mCreateStatusMessageView;
+	private ProgressControl mProgressControl;
 
 	private SubmitThread mSubmitThread = null;
 	final Handler mHandler = new Handler();
@@ -86,10 +90,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 						startActivityForResult(i, REQ_CODE_PICK_PICTURE);
 					}
 				});
-		
-		mCreateFormView = findViewById(R.id.create_form);
-		mCreateStatusView = findViewById(R.id.create_status);
-		mCreateStatusMessageView = (TextView) findViewById(R.id.create_status_message);
+		mProgressControl = new ProgressControl(getBaseContext(), findViewById(R.id.create_form), findViewById(R.id.create_status), (TextView) findViewById(R.id.create_status_message));
 	}
 
 	public void OnClickSubmitButtonMethod(View v) {
@@ -111,8 +112,8 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 			Toast.makeText(getBaseContext(), errmsg, Toast.LENGTH_SHORT).show();
 			
 		} else {
-			mCreateStatusMessageView.setText(R.string.create_progress);
-			showProgress(true);
+			mProgressControl.setMessageById(R.string.create_progress);
+			mProgressControl.showProgress(true);
 			mSubmitThread = (SubmitThread) new SubmitThread(this);
 			mSubmitThread.execute((Void) null);
 		}
@@ -132,48 +133,6 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 			}
 		}
 	}
-	
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mCreateStatusView.setVisibility(View.VISIBLE);
-			mCreateStatusView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 1 : 0)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mCreateStatusView.setVisibility(show ? View.VISIBLE
-							: View.GONE);
-				}
-			});
-
-			mCreateFormView.setVisibility(View.VISIBLE);
-			mCreateFormView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 0 : 1)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mCreateFormView.setVisibility(show ? View.GONE
-							: View.VISIBLE);
-				}
-			});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mCreateStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mCreateFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-		}
-	}
-	
 
 	private class SubmitThread extends AsyncTask<Void, Void, String> {
 		private TaskCallback mCallback;
@@ -184,11 +143,27 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 
 		@Override
 		protected String doInBackground(Void... arg0) {
-			HttpClient httpClient = new DefaultHttpClient();
+			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpContext localContext = new BasicHttpContext();
 			HttpPost httpPost = new HttpPost(url);
 			String reqUrl = null;
 			try {
+				CookieSyncManager.createInstance(getBaseContext());
+				CookieManager cookieManager = CookieManager.getInstance();
+				String keyValue = cookieManager.getCookie("http://test20103377.appspot.com/");
+				if(keyValue!=null){
+					String [] cookieArray = keyValue.split("; ");
+					for(int i=0;i<cookieArray.length;i++){
+						String [] cookie = cookieArray[i].split("=");
+						if(cookie[0].equals("JSESSIONID")){
+							httpClient.getCookieStore().addCookie(new BasicClientCookie(cookie[0], cookie[1]));
+							CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
+							List<Cookie> cookies  = httpClient.getCookieStore().getCookies();
+							List<?> cookieHeader = cookieSpecBase.formatCookies(cookies);
+							httpPost.setHeader((Header) cookieHeader.get(0));
+						}
+					}
+				}
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 				nameValuePairs.add(new BasicNameValuePair("action", "ReqUrl"));
 				httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs)); 
@@ -239,7 +214,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 
 		protected void onPostExecute(String result) {
 			mSubmitThread = null;
-			showProgress(false);
+			//mProgressControl.showProgress(false);
 			if(result.contains("Create Success")){
 				mCallback.done();
 			}
@@ -247,7 +222,7 @@ public class ProjectCreateActivity extends Activity implements TaskCallback {
 		@Override
 		protected void onCancelled() {
 			mSubmitThread = null;
-			showProgress(false);
+			mProgressControl.showProgress(false);
 		}
 	}
 

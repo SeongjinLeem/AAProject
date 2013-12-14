@@ -20,9 +20,24 @@
             android:layout_weight="1"
             android:background="#D3D3D3"
             android:text="@string/action_logout" />
+        
+        <View
+            android:layout_width="1dip"
+            android:layout_height="40dip"
+            android:layout_marginBottom="5dip"
+            android:layout_marginTop="5dip"
+            android:background="?android:attr/dividerVertical" />
+
+        <Button
+            android:id="@+id/recruit_state_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#D3D3D3"
+            android:text="@string/action_recruit_state" />
 
         <View
-            android:id="@+id/Shade2"
             android:layout_width="1dip"
             android:layout_height="40dip"
             android:layout_marginBottom="5dip"

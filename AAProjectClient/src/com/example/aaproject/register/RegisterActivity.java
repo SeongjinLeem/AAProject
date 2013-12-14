@@ -6,30 +6,28 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
-import com.example.aaproject.R.array;
-import com.example.aaproject.R.id;
-import com.example.aaproject.R.layout;
-import com.example.aaproject.R.menu;
 import com.example.aaproject.login.LoginActivity;
+import com.example.aaproject.util.ProgressControl;
 import com.example.aaproject.util.TaskCallback;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,6 +36,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -59,9 +59,7 @@ public class RegisterActivity extends Activity implements TaskCallback {
 	private RadioGroup mGenderGroup;
 	private Spinner mFieldView;
 	private EditText mLocationView;
-	private View mRegisterFormView;
-	private View mRegisterStatusView;
-	private TextView mRegisterStatusMessageView;
+	private ProgressControl mProgressControl;
 
 	private RegisterThread mRegisterThread = null;
 	private EmailCheckThread mEmailCheckThread = null;
@@ -89,10 +87,8 @@ public class RegisterActivity extends Activity implements TaskCallback {
 		fieldSpin.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mFieldView.setAdapter(fieldSpin);
 
-		mRegisterFormView = findViewById(R.id.register_form);
-		mRegisterStatusView = findViewById(R.id.register_status);
-		mRegisterStatusMessageView = (TextView) findViewById(R.id.register_status_message);
-		
+		mProgressControl = new ProgressControl(getBaseContext(), findViewById(R.id.register_form), findViewById(R.id.register_status), (TextView) findViewById(R.id.register_status_message));
+
 		mLocationView = (EditText) findViewById(R.id.location);
 		mLocationView.setKeyListener(null);
 		mLocationView.setOnFocusChangeListener(new EditText.OnFocusChangeListener(){
@@ -120,7 +116,8 @@ public class RegisterActivity extends Activity implements TaskCallback {
 						mEmailView.setError("invalid Email Address");
 					}
 					else{
-						mEmailCheckThread = (EmailCheckThread) new EmailCheckThread().execute((Void) null);
+						mEmailCheckThread = (EmailCheckThread) new EmailCheckThread();
+						mEmailCheckThread.execute((Void) null);
 					}
 				}
 			}
@@ -143,47 +140,6 @@ public class RegisterActivity extends Activity implements TaskCallback {
 			}
 		});
 
-	}
-	
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mRegisterStatusView.setVisibility(View.VISIBLE);
-			mRegisterStatusView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 1 : 0)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mRegisterStatusView.setVisibility(show ? View.VISIBLE
-							: View.GONE);
-				}
-			});
-
-			mRegisterFormView.setVisibility(View.VISIBLE);
-			mRegisterFormView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 0 : 1)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mRegisterFormView.setVisibility(show ? View.GONE
-							: View.VISIBLE);
-				}
-			});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mRegisterStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mRegisterFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-		}
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent intent){
@@ -249,9 +205,10 @@ public class RegisterActivity extends Activity implements TaskCallback {
 			Toast.makeText(getBaseContext(), errmsg, Toast.LENGTH_SHORT).show();
 			focusView.requestFocus();
 		} else {
-			mRegisterStatusMessageView.setText(R.string.register_progress);
-			showProgress(true);
-			mRegisterThread = (RegisterThread) new RegisterThread(this).execute((Void) null);
+			mProgressControl.setMessageById(R.string.register_progress);
+			mProgressControl.showProgress(true);
+			mRegisterThread = (RegisterThread) new RegisterThread(this);
+			mRegisterThread.execute((Void) null);
 		}
 	}
 
@@ -267,9 +224,25 @@ public class RegisterActivity extends Activity implements TaskCallback {
 		@Override
 		protected String doInBackground(Void... arg0) {
 
-			HttpClient httpclient = new DefaultHttpClient();
+			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httppost = new HttpPost(url);
 			try {
+				CookieSyncManager.createInstance(getBaseContext());
+				CookieManager cookieManager = CookieManager.getInstance();
+				String keyValue = cookieManager.getCookie("http://test20103377.appspot.com/");
+				if(keyValue!=null){
+					String [] cookieArray = keyValue.split("; ");
+					for(int i=0;i<cookieArray.length;i++){
+						String [] cookie = cookieArray[i].split("=");
+						if(cookie[0].equals("JSESSIONID")){
+							httpclient.getCookieStore().addCookie(new BasicClientCookie(cookie[0], cookie[1]));
+							CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
+							List<Cookie> cookies  = httpclient.getCookieStore().getCookies();
+							List<?> cookieHeader = cookieSpecBase.formatCookies(cookies);
+							httppost.setHeader((Header) cookieHeader.get(0));
+						}
+					}
+				}
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 				nameValuePairs.add(new BasicNameValuePair("action", "Register"));
 				nameValuePairs.add(new BasicNameValuePair("email", mEmailView.getText().toString()));
@@ -297,10 +270,11 @@ public class RegisterActivity extends Activity implements TaskCallback {
 
 		protected void onPostExecute(String result) {
 			mRegisterThread = null;
-			showProgress(false);
+			
 			if(result.contains("Register Success")){
 				mCallback.done();
 			}else if(result.contains("Duplicate Email")){
+				mProgressControl.showProgress(false);
 				mHandler.post(new Runnable() {
 					public void run() {
 						mEmailView.setError("This email address is already used");
@@ -311,7 +285,7 @@ public class RegisterActivity extends Activity implements TaskCallback {
 		
 		protected void onCancelled() {
 			mRegisterThread = null;
-			showProgress(false);
+			mProgressControl.showProgress(false);
 		}
 	}
 
@@ -349,6 +323,7 @@ public class RegisterActivity extends Activity implements TaskCallback {
 				mHandler.post(new Runnable() {
 				      public void run() {
 				    	  mEmailView.setError(null);
+				    	  mEmailView.setBackgroundColor(Color.rgb(50, 205, 50));
 				    	  Toast.makeText(getBaseContext(), "This email address is available", Toast.LENGTH_SHORT).show();
 				      }
 				});

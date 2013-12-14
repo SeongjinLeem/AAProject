@@ -29,6 +29,7 @@ public class Login extends HttpServlet {
 				out.println(session.getAttribute("loginEmail"));
 			}else{
 				out.println("login required");
+				session.invalidate();
 			}
 		}else if(action.equals("Login")){
 			PersistenceManager pm = PMF.get().getPersistenceManager();
@@ -40,25 +41,19 @@ public class Login extends HttpServlet {
 					synchronized(session) {
 						session.setAttribute("loginEmail", request.getParameter("email"));
 					}
-					if(request.getParameter("regID")!=null){
-						synchronized(session) {
-							session.setAttribute("regID", request.getParameter("regID"));
-						}
-						response.setContentType("text/plain");
-						PrintWriter out = response.getWriter();
-						out.println("Login Success");
-					}else{
-						response.sendRedirect("/projectlist");
-					}
+					User user = users.get(0);
+					user.setLoggedin(true);
+					user.setRegId(request.getParameter("regId"));
+					pm.makePersistent(user);
+					response.setContentType("text/plain");
+					PrintWriter out = response.getWriter();
+					out.println("Login Success");
 				}
 				else{
-					if(request.getParameter("regID")!=null){
-						response.setContentType("text/plain");
-						PrintWriter out = response.getWriter();
-						out.println("Login Fail");
-					}else{
-						response.sendRedirect("/login_fail.html");
-					}
+					response.setContentType("text/plain");
+					PrintWriter out = response.getWriter();
+					out.println("Login Fail");
+					session.invalidate();
 				}
 			} finally{
 				pm.close();

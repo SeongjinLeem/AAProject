@@ -14,6 +14,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -39,7 +40,11 @@ import com.example.aaproject.R.string;
 import com.example.aaproject.main.MyProjectListFragment;
 import com.example.aaproject.main.ProjectListFragment;
 import com.example.aaproject.main.MainFragmentActivity.ListLoadingTask;
+import com.example.aaproject.model.Member;
+import com.example.aaproject.model.Project;
+import com.example.aaproject.model.Sponsor;
 import com.example.aaproject.util.PageLoadFragment;
+import com.example.aaproject.util.ProgressControl;
 import com.example.aaproject.util.TaskCallback;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -73,8 +78,6 @@ import android.widget.TextView;
 public class ProjectDisplayFragmentActivity extends FragmentActivity implements TaskCallback{
 	static final String url = "http://test20103377.appspot.com/projectdisplay";
 	private ProjectLoadingTask mProjectLoadingTask = null;
-	private View mProjectStatusView;
-	private TextView mProjectStatusMessageView;
 	public Project mProject = null;
 	public List<Member> mMemberList = null;
 	public List<Sponsor> mSponsorList = null;
@@ -82,6 +85,7 @@ public class ProjectDisplayFragmentActivity extends FragmentActivity implements 
 	public String mMyEmail = null;
 	public String mJSESSIONID = null;
 	public boolean mCreateFlag = true;
+	private ProgressControl mProgressControl;
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -104,9 +108,8 @@ public class ProjectDisplayFragmentActivity extends FragmentActivity implements 
 		setContentView(R.layout.activity_project_display);
 
 		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mProjectStatusView = findViewById(R.id.project_status);
-		mProjectStatusMessageView = (TextView) findViewById(R.id.project_status_message);
-		mProjectStatusMessageView.setText(R.string.project_progress);
+		mProgressControl = new ProgressControl(getBaseContext(), mViewPager, findViewById(R.id.project_status), (TextView) findViewById(R.id.project_status_message));
+		mProgressControl.setMessageById(R.string.project_progress);
 
 		Bundle extras = getIntent().getExtras();
 		mProjectID = extras.getString("projectID");
@@ -117,7 +120,7 @@ public class ProjectDisplayFragmentActivity extends FragmentActivity implements 
 	}
 
 	public void projectInfoLoad(){
-		showProgress(true);
+		mProgressControl.showProgress(true);
 
 		mProjectLoadingTask = new ProjectLoadingTask(this);
 		mProjectLoadingTask.execute();
@@ -125,7 +128,7 @@ public class ProjectDisplayFragmentActivity extends FragmentActivity implements 
 
 	@Override
 	public void done() {
-		showProgress(false);
+		mProgressControl.showProgress(false);
 		if(mCreateFlag==false){
 			List<Fragment> list = getSupportFragmentManager().getFragments();
 			for(int i=0;i<list.size();i++){
@@ -212,6 +215,22 @@ public class ProjectDisplayFragmentActivity extends FragmentActivity implements 
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httppost = new HttpPost(url);
 			try {
+				CookieSyncManager.createInstance(getBaseContext());
+				CookieManager cookieManager = CookieManager.getInstance();
+				String keyValue = cookieManager.getCookie("http://test20103377.appspot.com/");
+				if(keyValue!=null){
+					String [] cookieArray = keyValue.split("; ");
+					for(int i=0;i<cookieArray.length;i++){
+						String [] cookie = cookieArray[i].split("=");
+						if(cookie[0].equals("JSESSIONID")){
+							httpclient.getCookieStore().addCookie(new BasicClientCookie(cookie[0], cookie[1]));
+							CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
+							List<Cookie> cookies  = httpclient.getCookieStore().getCookies();
+							List<?> cookieHeader = cookieSpecBase.formatCookies(cookies);
+							httppost.setHeader((Header) cookieHeader.get(0));
+						}
+					}
+				}
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 				nameValuePairs.add(new BasicNameValuePair("action", "project"));
 				nameValuePairs.add(new BasicNameValuePair("projectID", mProjectID));
@@ -292,47 +311,6 @@ public class ProjectDisplayFragmentActivity extends FragmentActivity implements 
 		@Override
 		protected void onPostExecute(final Boolean result) {
 			mCallback.done();
-		}
-	}
-
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mProjectStatusView.setVisibility(View.VISIBLE);
-			mProjectStatusView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 1 : 0)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mProjectStatusView.setVisibility(show ? View.VISIBLE
-							: View.GONE);
-				}
-			});
-
-			mViewPager.setVisibility(View.VISIBLE);
-			mViewPager.animate().setDuration(shortAnimTime)
-			.alpha(show ? 0 : 1)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mViewPager.setVisibility(show ? View.GONE
-							: View.VISIBLE);
-				}
-			});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mProjectStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mViewPager.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
 	}
 }

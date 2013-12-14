@@ -11,13 +11,18 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.impl.cookie.BrowserCompatSpec;
+import org.apache.http.impl.cookie.CookieSpecBase;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.example.aaproject.R;
 import com.example.aaproject.main.MainFragmentActivity;
 import com.example.aaproject.register.RegisterActivity;
+import com.example.aaproject.util.ProgressControl;
 import com.example.aaproject.util.TaskCallback;
 import com.google.android.gcm.GCMRegistrar;
 
@@ -64,9 +69,7 @@ public class LoginActivity extends Activity implements TaskCallback {
 	// UI references.
 	private EditText mEmailView;
 	private EditText mPasswordView;
-	private View mLoginFormView;
-	private View mLoginStatusView;
-	private TextView mLoginStatusMessageView;
+	private ProgressControl mProgressControl;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +101,7 @@ public class LoginActivity extends Activity implements TaskCallback {
 				return false;
 			}
 		});
-
-		mLoginFormView = findViewById(R.id.login_form);
-		mLoginStatusView = findViewById(R.id.login_status);
-		mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
+		mProgressControl = new ProgressControl(getBaseContext(), findViewById(R.id.login_form), findViewById(R.id.login_status),(TextView) findViewById(R.id.login_status_message));
 
 		findViewById(R.id.sign_in_button).setOnClickListener(
 				new View.OnClickListener() {
@@ -183,51 +183,10 @@ public class LoginActivity extends Activity implements TaskCallback {
 		} else {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
-			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
-			showProgress(true);
+			mProgressControl.setMessageById(R.string.login_progress_signing_in);
+			mProgressControl.showProgress(true);
 			mAuthTask = new UserLoginTask(this);
 			mAuthTask.execute((Void) null);
-		}
-	}
-
-	/**
-	 * Shows the progress UI and hides the login form.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(
-					android.R.integer.config_shortAnimTime);
-
-			mLoginStatusView.setVisibility(View.VISIBLE);
-			mLoginStatusView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 1 : 0)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mLoginStatusView.setVisibility(show ? View.VISIBLE
-							: View.GONE);
-				}
-			});
-
-			mLoginFormView.setVisibility(View.VISIBLE);
-			mLoginFormView.animate().setDuration(shortAnimTime)
-			.alpha(show ? 0 : 1)
-			.setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					mLoginFormView.setVisibility(show ? View.GONE
-							: View.VISIBLE);
-				}
-			});
-		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
-			mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-			mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 		}
 	}
 
@@ -242,13 +201,29 @@ public class LoginActivity extends Activity implements TaskCallback {
 		}
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			HttpClient httpclient = new DefaultHttpClient();
+			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httppost = new HttpPost(url);
 
 			try {
+				CookieSyncManager.createInstance(getBaseContext());
+				CookieManager cookieManager = CookieManager.getInstance();
+				String keyValue = cookieManager.getCookie("http://test20103377.appspot.com/");
+				if(keyValue!=null){
+					String [] cookieArray = keyValue.split("; ");
+					for(int i=0;i<cookieArray.length;i++){
+						String [] cookie = cookieArray[i].split("=");
+						if(cookie[0].equals("JSESSIONID")){
+							httpclient.getCookieStore().addCookie(new BasicClientCookie(cookie[0], cookie[1]));
+							CookieSpecBase cookieSpecBase = new BrowserCompatSpec();
+							List<Cookie> cookies  = httpclient.getCookieStore().getCookies();
+							List<?> cookieHeader = cookieSpecBase.formatCookies(cookies);
+							httppost.setHeader((Header) cookieHeader.get(0));
+						}
+					}
+				}
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 				nameValuePairs.add(new BasicNameValuePair("action", "Login"));
-				nameValuePairs.add(new BasicNameValuePair("regID", mRegID));
+				nameValuePairs.add(new BasicNameValuePair("regId", mRegID));
 				nameValuePairs.add(new BasicNameValuePair("email", mEmail));
 				nameValuePairs.add(new BasicNameValuePair("password", sha1(mPassword)));
 				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs)); 
@@ -259,7 +234,7 @@ public class LoginActivity extends Activity implements TaskCallback {
 
 				if(responseBody.contains("Login Success")){
 					CookieSyncManager.createInstance(getBaseContext());
-					CookieManager cookieManager = CookieManager.getInstance();
+					cookieManager = CookieManager.getInstance();
 					cookieManager.removeAllCookie();
 					Header[] cookies = response.getHeaders("Set-Cookie");
 					boolean cookieFlag = false;
@@ -289,7 +264,7 @@ public class LoginActivity extends Activity implements TaskCallback {
 		@Override
 		protected void onPostExecute(final Boolean success) {
 			mAuthTask = null;
-			showProgress(false);
+			mProgressControl.showProgress(false);
 
 			if (success) {
 				mCallback.done();
@@ -302,7 +277,7 @@ public class LoginActivity extends Activity implements TaskCallback {
 		@Override
 		protected void onCancelled() {
 			mAuthTask = null;
-			showProgress(false);
+			mProgressControl.showProgress(false);
 		}
 	}
 

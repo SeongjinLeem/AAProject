@@ -32,10 +32,11 @@ public class Register extends HttpServlet {
 				String gender = request.getParameter("gender");
 				String field = request.getParameter("field");
 				String geoPoint = request.getParameter("location");
+				String regId = request.getParameter("regId");
 				float lat = Float.parseFloat(geoPoint.substring(0, geoPoint.indexOf(",")));
 				float lng = Float.parseFloat(geoPoint.substring(geoPoint.indexOf(",")+1));
 				GeoPt location = new GeoPt(lat, lng);
-				User user = new User(email, password, name, age, gender, field, location);
+				User user = new User(email, password, name, age, gender, field, location, regId);
 				PersistenceManager pm = PMF.get().getPersistenceManager();
 				try {
 					String query = "select from " + User.class.getName() + " where email == '" + request.getParameter("email") + "'";
@@ -70,6 +71,8 @@ public class Register extends HttpServlet {
 					}
 				} finally{
 					pm.close();
+					HttpSession session = request.getSession();
+					session.invalidate();
 				}
 				
 			}

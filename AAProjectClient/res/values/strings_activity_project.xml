@@ -9,18 +9,25 @@
     <string name="create_progress">Project Creating&#8230;</string>
     <string name="list_progress">List Loading&#8230;</string>
     <string name="project_progress">Project Loading&#8230;</string>
-     <string name="sponsor_progress">submitting&#8230;</string>
+    <string name="sponsor_progress">submitting&#8230;</string>
+    <string name="submit_progress">submitting&#8230;</string>
+    <string name="loading_progress">Loading&#8230;</string>
+    <string name="map_loading_progress">Map Loading&#8230;</string>
     <string name="list_empty">Projects not Exist.</string>
     <string name="image_contents">No Image</string>
     <string name="project_goal">Donation Goal</string>
     <string name="loc">Loc</string>
     <string name="action_recruit">Recruit</string>
+    <string name="action_recruit_state">Recruit Info</string>
     <string name="action_join">Join</string>
     <string name="project_introduce">프로젝트 소개</string>
     <string name="project_member">프로젝트 멤버</string>
     <string name="project_sponsor">프로젝트 후원자</string>
     <string name="goal_rate_text">목표 0원 중 0% 모임</string>
     <string name="action_project_create">New Project</string>
+    <string name="profile_message">보낼 메세지를 입력해 주세요.</string>
+    <string name="profile_text">초대 메세지</string>
+    <string name="join_text">참여 요청 메세지</string>
     <string name="donation_text">0원</string>
     <string name="sponsor_text">0명</string>
     <string name="sponsor_Button_text">후원하기</string>
@@ -29,5 +36,9 @@
     <string name="donation_10000">10000</string>
     <string name="donation_50000">50000</string>
     <string name="donation_won">원</string>
+    <string name="recruit_request">참여 요청 발신 목록</string>
+    <string name="join_request">참여 요청 수신 목록</string>
+    <string name="permit_button">승인</string>
+    <string name="reject_button">거부</string>
 
 </resources>

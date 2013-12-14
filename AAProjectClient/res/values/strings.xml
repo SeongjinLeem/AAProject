@@ -20,5 +20,8 @@
     <string name="title_activity_project_recruit">ProjectRecruitActivity</string>
     <string name="title_activity_project_join">ProjectJoinActivity</string>
     <string name="title_activity_project_sponsoring">ProjectSponsoringActivity</string>
+    <string name="title_activity_member_location">MemberLocationActivity</string>
+    <string name="aall">A\nki04090@naver.com\nandroid programmer\n경기도 김포시 통진읍 마송리</string>
+    <string name="title_activity_recruit_state">RecruitStateActivity</string>
 
 </resources>

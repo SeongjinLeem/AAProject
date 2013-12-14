@@ -184,7 +184,7 @@ public class StartActivity extends Activity implements TaskCallback {
 			try {
 				CookieSyncManager.createInstance(getBaseContext());
 				CookieManager cookieManager = CookieManager.getInstance();
-				String keyValue = cookieManager.getCookie(url);
+				String keyValue = cookieManager.getCookie("http://test20103377.appspot.com/");
 				if(keyValue!=null){
 					String [] cookieArray = keyValue.split("; ");
 					for(int i=0;i<cookieArray.length;i++){
@@ -197,13 +197,14 @@ public class StartActivity extends Activity implements TaskCallback {
 							httppost.setHeader((Header) cookieHeader.get(0));
 						}
 					}
+					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+					nameValuePairs.add(new BasicNameValuePair("action", "LoginCheck"));
+					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs)); 
+					// Execute HTTP Post Request
+					HttpResponse response = httpclient.execute(httppost);
+					return EntityUtils.toString(response.getEntity());
 				}
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-				nameValuePairs.add(new BasicNameValuePair("action", "LoginCheck"));
-				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs)); 
-				// Execute HTTP Post Request
-				HttpResponse response = httpclient.execute(httppost);
-				return EntityUtils.toString(response.getEntity());
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block   
 			}
@@ -211,8 +212,7 @@ public class StartActivity extends Activity implements TaskCallback {
 			return null;
 		}
 		protected void onPostExecute(String result) {
-			if(result.contains("already loggedin")){
-
+			if(result != null && result.contains("already loggedin")){
 				loggedin = true;
 			}else{
 				loggedin = false;
